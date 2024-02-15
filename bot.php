@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Chatbot in PHP | CampCodes</title>
+    <title>Virtual assistent</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 <body>
     <div class="wrapper">
-        <div class="title">Online assistent</div>
+        <div class="title">Virtual assistent
+        </div>
         <div class="form">
             <div class="bot-inbox inbox">
                 <div class="icon">
-                    <i class="fas fa-user"></i>
                 </div>
                 <div class="msg-header">
                     <p>Hello there, how can I help you?</p>
@@ -30,28 +30,42 @@
     </div>
 
     <script>
-        $(document).ready(function(){
-            $("#send-btn").on("click", function(){
-                $value = $("#data").val();
-                $msg = '<div class="user-inbox inbox"><div class="msg-header"><p>'+ $value +'</p></div></div>';
-                $(".form").append($msg);
-                $("#data").val('');
-                
-                // start ajax code
-                $.ajax({
-                    url: 'message.php',
-                    type: 'POST',
-                    data: 'text='+$value,
-                    success: function(result){
-                        $replay = '<div class="bot-inbox inbox"><div class="icon"><i class="fas fa-user"></i></div><div class="msg-header"><p>'+ result +'</p></div></div>';
-                        $(".form").append($replay);
-                        // when chat goes down the scroll bar automatically comes to the bottom
-                        $(".form").scrollTop($(".form")[0].scrollHeight);
-                    }
-                });
-            });
+    $(document).ready(function(){
+        // Function to handle click event on button
+        $("#send-btn").on("click", function(){
+            sendMessage();
         });
-    </script>
+
+        // Function to handle Enter key press event
+        $("#data").on("keypress", function(e) {
+            if (e.which == 13) { // 13 is the code for Enter key
+                sendMessage();
+            }
+        });
+
+        // Function to send message
+        function sendMessage() {
+            $value = $("#data").val();
+            $msg = '<div class="user-inbox inbox"><div class="msg-header"><p>'+ $value +'</p></div></div>';
+            $(".form").append($msg);
+            $("#data").val('');
+
+            // Start ajax code
+            $.ajax({
+                url: 'message.php',
+                type: 'POST',
+                data: 'text='+$value,
+                success: function(result){
+                    $replay = '<div class="bot-inbox inbox"><div class="icon"><i class="fas fa-user"></i></div><div class="msg-header"><p>'+ result +'</p></div></div>';
+                    $(".form").append($replay);
+                    // When chat goes down, the scroll bar automatically comes to the bottom
+                    $(".form").scrollTop($(".form")[0].scrollHeight);
+                }
+            });
+        }
+    });
+</script>
+
     
 </body>
 </html>
