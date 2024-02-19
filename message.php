@@ -1,38 +1,41 @@
 <?php
-// Load spaCy model
-require_once 'vendor/autoload.php';
-use Spacy\Nlp;
-
-$nlp = new Nlp();
-$nlp->load('en_core_web_sm');
-
-// Connecting to the database
+// connecting to the database
 $conn = mysqli_connect("localhost", "root", "", "bot") or die("Database Error");
 
-// Getting user message through AJAX and sanitizing input
+// getting user message through AJAX
 $getMesg = mysqli_real_escape_string($conn, $_POST['text']);
 
-// Preprocess user input using spaCy
-$doc = $nlp->process($getMesg);
+// checking user query against database queries and keywords
+$check_data = "SELECT replies FROM chatbot WHERE queries LIKE '%$getMesg%'";
 
-// Extract normalized text from spaCy document
-$processedText = $doc->text;
+$run_query = mysqli_query($conn, $check_data) or die("Error");
 
-// Query to fetch bot response based on keyword matching
-$query = "SELECT replies FROM chatbot WHERE '$processedText' LIKE CONCAT('%', keywords, '%')";
-$result = mysqli_query($conn, $query);
+// if no direct match, try matching based on keywords
+if(mysqli_num_rows($run_query) == 0) {
+    $check_keywords = explode(";", $getMesg); // Assuming keywords are separated by semicolons
+    $keywords_condition = "";
 
-// If match found based on keywords, send the response back to the user; otherwise, send a default message
-if(mysqli_num_rows($result) > 0){
-    // Fetching reply from the database based on keyword match
-    $fetch_data = mysqli_fetch_assoc($result);
-    // Storing reply to a variable which we'll send to AJAX
-    $reply = $fetch_data['replies'];
-    echo $reply;
+    // Constructing the SQL condition to match any keyword
+    foreach($check_keywords as $keyword) {
+        $keywords_condition .= "keywords LIKE '%$keyword%' OR ";
+    }
+    $keywords_condition = rtrim($keywords_condition, "OR "); // Remove the last "OR" from the condition
+
+    // Check for matches based on keywords
+    $check_data_keywords = "SELECT replies FROM chatbot WHERE $keywords_condition";
+    $run_query_keywords = mysqli_query($conn, $check_data_keywords) or die("Error");
+
+    if(mysqli_num_rows($run_query_keywords) > 0) {
+        $fetch_data_keywords = mysqli_fetch_assoc($run_query_keywords);
+        $replay = $fetch_data_keywords['replies'];
+        echo $replay;
+    } else {
+        echo "Sorry, can't be able to understand you!";
+    }
 } else {
-    echo "Sorry, I didn't understand your query!";
+    $fetch_data = mysqli_fetch_assoc($run_query);
+    $replay = $fetch_data['replies'];
+    echo $replay;
 }
 
-// Closing the database connection
-mysqli_close($conn);
-?>
+

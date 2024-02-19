@@ -10,7 +10,7 @@
 </head>
 <body>
     <div class="wrapper">
-        <div class="title">Virtual assistent
+        <div class="title">irtual assistent
         </div>
         <div class="form">
             <div class="bot-inbox inbox">
