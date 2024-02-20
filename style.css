@@ -47,7 +47,7 @@ table {
 	border-spacing: 0;
 }
 
-/* CSS start */
+/* CSS start ................................................................................................*/
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
 
@@ -92,6 +92,25 @@ html, body {
     border-radius: 5px;
     border: 1px solid lightgrey;
     border-top: 0px;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: none;
+}
+
+#toggle-chatbot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+    cursor: pointer;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
 .wrapper .title {
@@ -232,4 +251,105 @@ html, body {
 .icon {
     justify-content: center;
     display: flex;
+}
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.open-chatbot-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+    cursor: pointer;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+.chatbot-wrapper {
+    position: fixed;
+    bottom: 0;
+    right: 20px;
+    z-index: 1000;
+    width: 300px;
+    height: 400px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: none;
+    flex-direction: column;
+    border-radius: 15px 15px 0 0;
+}
+.chat-header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chat-header .title {
+    font-size: 18px;
+}
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+.form {
+    overflow-y: auto; /* Enables scrolling */
+    flex: 1;
+    padding: 10px;
+    max-height: calc(100% - 120px); /* Adjust this value based on your header and input field heights */
+}
+
+.inbox {
+    margin: 10px 0;
+}
+.bot-inbox {
+    color: #444;
+    background-color: #f1f1f1;
+    align-self: flex-start;
+}
+.user-inbox {
+    color: white;
+    background-color: #007bff;
+    align-self: flex-end;
+}
+.inbox .msg-header {
+    padding: 5px 10px;
+    border-radius: 15px;
+    max-width: 80%;
+}
+.typing-field {
+    padding: 10px;
+    background-color: #f1f1f1;
+    display: flex;
+    border-top: 1px solid #ddd;
+}
+.input-data {
+    flex: 1;
+    display: flex;
+}
+.input-data input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+.input-data button {
+    padding: 10px 15px;
+    margin-left: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
 }
