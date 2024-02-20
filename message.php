@@ -1,41 +1,50 @@
 <?php
-// connecting to the database
-$conn = mysqli_connect("localhost", "root", "", "bot") or die("Database Error");
 
-// getting user message through AJAX
-$getMesg = mysqli_real_escape_string($conn, $_POST['text']);
+$host = 'localhost';
+$db   = 'bot'; // Replace with your database name
+$user = 'root'; // Replace with your database username
+$pass = ''; // Replace with your database password
+$charset = 'utf8mb4';
 
-// checking user query against database queries and keywords
-$check_data = "SELECT replies FROM chatbot WHERE queries LIKE '%$getMesg%'";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
 
-$run_query = mysqli_query($conn, $check_data) or die("Error");
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 
-// if no direct match, try matching based on keywords
-if(mysqli_num_rows($run_query) == 0) {
-    $check_keywords = explode(";", $getMesg); // Assuming keywords are separated by semicolons
-    $keywords_condition = "";
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+}
 
-    // Constructing the SQL condition to match any keyword
-    foreach($check_keywords as $keyword) {
-        $keywords_condition .= "keywords LIKE '%$keyword%' OR ";
-    }
-    $keywords_condition = rtrim($keywords_condition, "OR "); // Remove the last "OR" from the condition
+// Assuming the AJAX post sends a 'text' parameter with the user's message
+$userMessage = strtolower(trim($_POST['text'])); // Convert to lowercase and trim whitespace
 
-    // Check for matches based on keywords
-    $check_data_keywords = "SELECT replies FROM chatbot WHERE $keywords_condition";
-    $run_query_keywords = mysqli_query($conn, $check_data_keywords) or die("Error");
+// Manual check for common greetings
+$greetings = ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'];
+if (in_array($userMessage, $greetings)) {
+    echo "Hello, how can I help you?";
+    exit;
+}
 
-    if(mysqli_num_rows($run_query_keywords) > 0) {
-        $fetch_data_keywords = mysqli_fetch_assoc($run_query_keywords);
-        $replay = $fetch_data_keywords['replies'];
-        echo $replay;
-    } else {
-        echo "Sorry, can't be able to understand you!";
-    }
+// Prepare the full-text search SQL query
+$stmt = $pdo->prepare("SELECT replies FROM chatbot WHERE MATCH(queries, keywords) AGAINST(:message IN NATURAL LANGUAGE MODE)");
+
+// Execute the query with the user message as the parameter
+$stmt->execute(['message' => $userMessage]);
+
+// Fetch the reply
+$reply = $stmt->fetchColumn();
+
+// Check if a reply is found
+if ($reply) {
+    echo $reply;
 } else {
-    $fetch_data = mysqli_fetch_assoc($run_query);
-    $replay = $fetch_data['replies'];
-    echo $replay;
+    // No matching keywords found in the database
+    echo "Sorry, I can't understand that. Can you rephrase?";
 }
 
 
