@@ -23,11 +23,18 @@ try {
 // Assuming the AJAX post sends a 'text' parameter with the user's message
 $userMessage = strtolower(trim($_POST['text'])); // Convert to lowercase and trim whitespace
 
-// Manual check for common greetings
-$greetings = ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'];
-if (in_array($userMessage, $greetings)) {
-    echo "Hello, how can I help you?";
-    exit;
+// Check the message against known patterns first
+$knownPatterns = [
+    '/\b(hi|hello|hey|greetings|welcome|good morning|good afternoon|good evening)\b/' => "Hello, how can I help you?",
+    '/\bhow are you\b/' => "Hello, what is your problem ?",
+    // ... other patterns
+];
+
+foreach ($knownPatterns as $pattern => $response) {
+    if (preg_match($pattern, $userMessage)) {
+        echo $response;
+        exit;
+    }
 }
 
 // Prepare the full-text search SQL query
@@ -43,8 +50,10 @@ $reply = $stmt->fetchColumn();
 if ($reply) {
     echo $reply;
 } else {
+    // Debugging: Log the query that didn't match
+    error_log("No match found for: " . $userMessage);
+
     // No matching keywords found in the database
     echo "Sorry, I can't understand that. Can you rephrase?";
 }
-
 

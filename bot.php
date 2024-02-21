@@ -134,87 +134,8 @@
             </div>
         </div>
     </div>
+<script src="chatbot.js"></script>
+<script src="script.js"></script>
 
-    <script>
-$(document).ready(function(){
-    // Click event for send button
-    $("#send-btn").on("click", function(){
-        sendMessage();
-    });
-
-    // Keypress event to trigger sendMessage on Enter key
-    $("#data").on("keypress", function(e) {
-        if (e.which == 13) {
-            sendMessage();
-        }
-    });
-
-    // sendMessage function to handle sending and receiving messages
-    function sendMessage() {
-        let userInput = $("#data").val();
-        if(userInput.trim() !== '') {
-            let userMsg = '<div class="inbox user-inbox"><div class="msg-header"><p>'+ userInput +'</p></div></div>';
-            // Append user message to the chat window
-            $(".form").append(userMsg);
-            // Clear the input field after sending message
-            $("#data").val('');
-
-            // Scroll to the last message
-            $(".form").scrollTop($(".form")[0].scrollHeight);
-
-            // AJAX call to send the message and get a response from the server
-            $.ajax({
-                url: 'message.php', // Ensure this points to the correct location of your PHP script
-                type: 'POST',
-                data: {text: userInput}, // Pass user input as POST data
-                success: function(response){
-                    // Append bot reply to the chat window
-                    let botReply = '<div class="bot-inbox inbox"><div class="icon"><i class="fas fa-user"></i></div><div class="msg-header"><p>'+ response +'</p></div></div>';
-                    $(".form").append(botReply);
-                    // Ensure the last message is visible
-                    $(".form").scrollTop($(".form")[0].scrollHeight);
-                }
-            });
-        }
-    }
-
-    // Functionality to toggle chatbot visibility and 'Chat with Us!' button
-    $("#toggle-chatbot").click(function() {
-        $(".chatbot-wrapper").fadeToggle('fast', function() {
-            // Check if the chatbot is visible
-            if ($(".chatbot-wrapper").is(":visible")) {
-                // If visible, hide the 'Chat with Us!' button
-                $("#toggle-chatbot").hide();
-            }
-        });
-        // Focus on the input field when chat is visible
-        $("#data").focus();
-    });
-
-    // Close the chatbot and show the 'Chat with Us!' button
-    $("#close-chatbot").click(function() {
-        $(".chatbot-wrapper").fadeOut('fast', function() {
-            // Once the chatbot is hidden, show the 'Chat with Us!' button
-            $("#toggle-chatbot").show();
-        });
-    });
-
-    // Adjust chat window height to make sure input is always visible
-    function adjustChatHeight() {
-        var chatWindow = $('.chatbot-wrapper');
-        var chatMessages = $('.form');
-        var inputHeight = $('.typing-field').outerHeight(true); // true includes margin
-        chatMessages.height(chatWindow.height() - inputHeight - $('.chat-header').outerHeight(true)); // Adjust height based on header and input height
-    }
-
-    // Call adjustChatHeight on window resize
-    $(window).resize(function() {
-        adjustChatHeight();
-    });
-
-    // Call adjustChatHeight on page load
-    adjustChatHeight();
-});
-</script>
 </body>
 </html> 
