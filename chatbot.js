@@ -24,6 +24,21 @@ $(document).ready(function(){
             });
         }
     }
+    
+    $("#toggle-chatbot").click(function() {
+        $(".chatbot-wrapper").fadeToggle('fast', function() {
+            // This line ensures the chat button hides when the chat is visible and vice versa
+            $("#toggle-chatbot").css('display', $(".chatbot-wrapper").is(":visible") ? 'none' : 'block');
+        });
+        $("#data").focus();
+    });
+
+    // Close the chatbot and show the 'Chat with Us!' button
+    $("#close-chatbot").click(function() {
+        $(".chatbot-wrapper").fadeOut('fast', function() {
+            $("#toggle-chatbot").css('display', 'block');
+        });
+    });
 
     // Event handler for send button click
     $("#send-btn").on("click", sendMessage);
